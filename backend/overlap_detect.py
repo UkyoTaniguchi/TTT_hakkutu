@@ -12,9 +12,8 @@ from yolox.data.data_augment import preproc as preprocess
 from yolox.data.datasets import COCO_CLASSES
 from yolox.utils import multiclass_nms, demo_postprocess
 
-# Flaskアプリケーションのセットアップ
 app = Flask(__name__)
-CORS(app)  # CORS（Cross-Origin Resource Sharing）を有効にする
+CORS(app)
 
 # グローバル変数
 person_detected = 0  # 'person'クラスが検出されたかどうかを示すフラグ
@@ -47,16 +46,13 @@ def compute_coverage_ratio(box1, box2):
     xB = min(box1[2], box2[2])
     yB = min(box1[3], box2[3])
 
-    # Intersection area
     interArea = max(0, xB - xA) * max(0, yB - yA)
     if interArea == 0:
         return 0.0
 
-    # Areas of the two boxes
     box1Area = (box1[2] - box1[0]) * (box1[3] - box1[1])
     box2Area = (box2[2] - box2[0]) * (box2[3] - box2[1])
 
-    # Calculate the coverage ratio for both boxes and return the larger ratio
     coverage_ratio1 = interArea / box1Area
     coverage_ratio2 = interArea / box2Area
 
@@ -80,9 +76,6 @@ def detect_and_save_seats():
     if not ret:
         print("Error: Failed to read frame from camera.")
         return
-
-    # `resize_with_padding()`の呼び出しを削除
-    # frame = resize_with_padding(frame, target_size=(640, 640))
 
     # 画像の前処理
     input_shape = (640, 640)  # YOLOXの入力サイズ
@@ -168,8 +161,7 @@ def resize_with_padding(frame, target_size=(640, 640)):
     pad_h = (target_h - new_h) // 2
 
     # 黒い背景で新しいフレームを作成
-    padded_frame = cv2.copyMakeBorder(resized_frame, pad_h, target_h - new_h - pad_h, pad_w, target_w - new_w - pad_w, 
-                                      cv2.BORDER_CONSTANT, value=[0, 0, 0])
+    padded_frame = cv2.copyMakeBorder(resized_frame, pad_h, target_h - new_h - pad_h, pad_w, target_w - new_w - pad_w, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
     return padded_frame
 
@@ -216,7 +208,7 @@ def detect_person_and_update():
         dets = multiclass_nms(boxes_xyxy, scores, nms_thr=0.45, score_thr=0.7)
 
         # 検出結果の初期化
-        person_detected = 0  # 初期化
+        person_detected = 0
 
         # 座席の占有状態を初期化
         for seat in seats_data:
@@ -244,7 +236,7 @@ def detect_person_and_update():
                             if seat["true_count"] >= 3:
                                 seat["occupied"] = True  # 重なっていればTrueに設定
                                 seat["true_count"] = 0
-   
+
         for seat in seats_data:
             print(f"Seat {seat['id']} true_count: {seat['true_count']}, false_count: {seat['false_count']}, {seat['occupied']}")
 
@@ -292,9 +284,9 @@ for seat_data in seats_data:
 def external_data():
     posted_data = request.get_json()
 
-    seat_id = posted_data.get("id")  # "id" キーが存在しない場合は None になる   
+    seat_id = posted_data.get("id")
     if seat_id is None:
-        return jsonify({"error": "Invalid data, 'id' field is missing"}), 400  # idがない場合はエラーレスポンスを返す
+        return jsonify({"error": "Invalid data, 'id' field is missing"})
     
     data_reserve[int(seat_id) - 1]["availability"] = posted_data.get("availability")
     data_reserve[int(seat_id) - 1]["reserver"] = posted_data.get("reserver")
@@ -310,9 +302,7 @@ def get_external_data():
         data[i]["availability"] = 1 if seat["occupied"] else 0
     
     for i, seat in enumerate(data_reserve):
-        # data_reserve の seat に対して処理を行う
         if seat["availability"] == 2:
-            # 対応する data の availability を確認
             if data[i]["availability"] == 0:
                 seat["availability"] = 2
             elif data[i]["availability"] == 1:
@@ -324,20 +314,18 @@ def get_external_data():
 
     return jsonify(data_reserve)
 
-# クリーンアップ関数（Flaskサーバーが終了する際に呼び出される）
 def shutdown():
     global running
     print("Shutting down...")
     running = False  # スレッドループを終了
     if cap and cap.isOpened():
-        cap.release()  # カメラを解放
+        cap.release()
 
 # プログラム終了時にクリーンアップ関数を呼び出す
 atexit.register(shutdown)
 
-# Flaskアプリケーションを実行
 if __name__ == '__main__':
     try:
-        app.run(debug=True, use_reloader=False)  # Flaskアプリケーションをデバッグモードで起動
+        app.run(debug=True, use_reloader=False)
     except KeyboardInterrupt:
         print("Shutting down...")
