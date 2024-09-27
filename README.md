@@ -1,45 +1,15 @@
-# TTT_hakkutu
+# ハックハッカソン スピノカップ
 
-## 実行方法
+2024/09/24-26
 
-### 1. Flask を仮想環境で実行
+チーム名：TTT
 
-backend ディレクトリに移動
+プロダクト名：整 know
 
-```bash
-cd backend
-```
+概要：サウナーのために開発した整いスペース予約サービス
 
-仮想環境起動
+システム紹介記事：https://topaz.dev/projects/1a5a4ffedaa05c7a06b4
 
-```bash
-source bin/activate
-```
+**Progate 賞**受賞
 
-Flask 実行
-
-```bash
-python app.py
-```
-
-### 2. next.js 実行
-
-frontend ディレクトリに移動
-
-```bash
-cd frontend
-```
-
-実行
-
-```bash
-npm run dev
-```
-
-### 3. json-server の実行方法
-
-frontend ディレクトリで以下のコマンドを実行する。
-
-```bash
-npx json-server --watch data.json -p 3000
-```
+![01J8M7WHKPBE8F8NYC072SKN5Z](https://github.com/user-attachments/assets/31c557e5-0a42-4e89-8d3a-45be1088f34c)
